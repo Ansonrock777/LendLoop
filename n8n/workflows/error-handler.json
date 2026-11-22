@@ -1,0 +1,17 @@
+{
+  "name": "LendLoop · Error handler",
+  "nodes": [
+    {"id":"38e086e4-6646-415e-9e96-c4876bf21ada","name":"When a LendLoop workflow fails","type":"n8n-nodes-base.errorTrigger","typeVersion":1,"position":[0,0],"parameters":{}},
+    {"id":"d9c39cbe-f759-4407-8c0b-96671907e7ef","name":"Build failure report","type":"n8n-nodes-base.code","typeVersion":2,"position":[224,0],"parameters":{"mode":"runOnceForEachItem","language":"javaScript","jsCode":"const wf = String($json.workflow?.name ?? 'Unknown workflow').slice(0, 120);\nconst exec = $json.execution?.id ? String($json.execution.id).slice(0, 40) : undefined;\nconst where = $json.execution?.lastNodeExecuted ? ' (at ' + String($json.execution.lastNodeExecuted).slice(0, 60) + ')' : '';\nlet msg = String($json.execution?.error?.message ?? 'The workflow failed.');\nmsg = msg.replace(/[^\\s@]+@[^\\s@]+/g, '[address]').replace(/\\s+/g, ' ').trim();\nmsg = (msg + where).slice(0, 200);\nconst report = { workflow: wf, message: msg };\nif (exec) report.executionId = exec;\nconst body = JSON.stringify(report);\nconst t = Math.floor(Date.now() / 1000);\nreturn { json: { body, t, toSign: t + '.' + body } };"}},
+    {"id":"4c594a0f-7ceb-4276-b152-f3f70db4b9ae","name":"Sign report","type":"n8n-nodes-base.crypto","typeVersion":2,"position":[448,0],"parameters":{"action":"hmac","type":"SHA256","value":"={{ $json.toSign }}","dataPropertyName":"v1","encoding":"hex"},"credentials":{"crypto":{"id":"uqQj87iL8GpdRf9B","name":"LendLoop webhook secret"}}},
+    {"id":"ee9d4fa3-840a-468c-a15c-f2c2ff53c0af","name":"Report to Convex","type":"n8n-nodes-base.httpRequest","typeVersion":4.5,"position":[672,0],"parameters":{"method":"POST","url":"https://impressive-malamute-384.convex.site/n8n/automation-failure","sendHeaders":true,"specifyHeaders":"keypair","headerParameters":{"parameters":[{"name":"X-LendLoop-Signature","value":"=t={{ $json.t }},v1={{ $json.v1 }}"}]},"sendBody":true,"contentType":"raw","rawContentType":"application/json","body":"={{ $json.body }}","options":{"timeout":15000}},"retryOnFail":true,"maxTries":3,"waitBetweenTries":5000},
+    {"id":"9a54aa7d-4f40-4b8c-94c9-95b099559e48","name":"Sticky Note 6915818b","type":"n8n-nodes-base.stickyNote","typeVersion":1,"position":[192,-96],"parameters":{"content":"## LendLoop error handler\nRuns when the notification or reminder workflow fails in production. Sends a short report to Convex so admins see it under Failed automations.\n\nEmail addresses are masked before the report leaves n8n. The request is signed with HMAC-SHA256 over `t.body`; the secret lives only in the **LendLoop webhook secret** credential.","color":7,"width":608,"height":224}}
+  ],
+  "connections": {
+    "When a LendLoop workflow fails": {"main":[[{"node":"Build failure report","type":"main","index":0}]]},
+    "Build failure report": {"main":[[{"node":"Sign report","type":"main","index":0}]]},
+    "Sign report": {"main":[[{"node":"Report to Convex","type":"main","index":0}]]}
+  },
+  "settings": {"executionOrder":"v1"},
+  "pinData": {}
+}

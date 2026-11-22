@@ -1,0 +1,284 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * LendLoop "paper and ink" (DESIGN.md v3, D18).
+ * The original palette from Phase 3 (paper, ink blue, amber, sage, terracotta) mapped onto
+ * shadcn's token names so every component inherits it. Contrast values in DESIGN.md.
+ *
+ * Roles:
+ *   ink blue  (--primary)    the one action colour: primary buttons, links, focus, selection
+ *   amber     (--attention)  pending and overdue. Never red for lateness.
+ *   sage      (--success)    approved, returned, available
+ *   clay      (--clay)       brand accent, used sparingly: wordmark loop, Trusted Lender seal
+ *   terracotta (--destructive) destructive actions and form errors only
+ */
+:root {
+  /* Surfaces: page is warm paper; cards sit slightly lighter; "sunken" areas slightly darker. */
+  --background: #F7F3EC;
+  --card: #FFFDF9;
+  --sunken: #EFE9DE;
+  --popover: #FFFDF9;
+  --foreground: #1F2430;
+  --card-foreground: #1F2430;
+  --popover-foreground: #1F2430;
+
+  --primary: #1F3A68;
+  --primary-hover: #19305A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1ECE3;
+  --secondary-foreground: #1F2430;
+  --muted: #EFE9DE;
+  --muted-foreground: #5B6170;
+  --accent: #EBE4D6;
+  --accent-foreground: #1F2430;
+
+  --attention: #FBEACB;
+  --attention-foreground: #7A4A06;
+  --attention-line: #E9C27A;
+  --success: #E2EEDF;
+  --success-foreground: #2F6B3F;
+  --success-line: #A9CBA9;
+  --clay: #9C4A2F;
+  --destructive: #A23B2A;
+
+  --border: #E3DCCF;
+  --border-strong: #CFC6B5;
+  --input: #8F887B;
+  --ring: #1F3A68;
+  --overlay: rgb(31 36 48 / 0.32);
+
+  /* Decorative art fills (tool illustrations). No text on these. */
+  --tint: #EDE5D5;
+  --art-blue: #C9D6EE;
+  --art-amber: #F6D9A0;
+  --art-sage: #CFE0D0;
+  --art-line: #1F2430;
+
+  /* Elevation: warm, low, layered. Shadows tinted with ink, never pure black. */
+  --shadow-xs: 0 1px 0 rgb(31 36 48 / 0.04);
+  --shadow-card: 0 1px 0 rgb(31 36 48 / 0.03), 0 1px 3px rgb(31 36 48 / 0.06);
+  --shadow-raised: 0 1px 2px rgb(31 36 48 / 0.06), 0 10px 28px -10px rgb(31 58 104 / 0.22);
+  --shadow-button: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 1px 2px rgb(31 36 48 / 0.18);
+
+  --chart-1: #1F3A68;
+  --chart-2: #9C4A2F;
+  --chart-3: #2F6B3F;
+  --chart-4: #C98A1B;
+  --chart-5: #5B6170;
+  --sidebar: #F1ECE3;
+  --sidebar-foreground: #1F2430;
+  --sidebar-primary: #1F3A68;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EBE4D6;
+  --sidebar-accent-foreground: #1F2430;
+  --sidebar-border: #E3DCCF;
+  --sidebar-ring: #1F3A68;
+
+  --radius: 0.5rem;
+  color-scheme: light;
+}
+
+/*
+ * Dark is its own palette ("night ink"), not an inversion: blue-black paper,
+ * lifted surfaces instead of shadows, primary turns to a soft daylight blue.
+ */
+.dark {
+  --background: #11151C;
+  --card: #191E27;
+  --sunken: #0D1016;
+  --popover: #1D232D;
+  --foreground: #ECE8E1;
+  --card-foreground: #ECE8E1;
+  --popover-foreground: #ECE8E1;
+
+  --primary: #8FB3F0;
+  --primary-hover: #A6C3F4;
+  --primary-foreground: #0F1420;
+  --secondary: #202631;
+  --secondary-foreground: #ECE8E1;
+  --muted: #232935;
+  --muted-foreground: #A8ADB8;
+  --accent: #262D3A;
+  --accent-foreground: #ECE8E1;
+
+  --attention: #2C2414;
+  --attention-foreground: #F2B65A;
+  --attention-line: #6B5225;
+  --success: #18281D;
+  --success-foreground: #7CC48E;
+  --success-line: #2F5A3B;
+  --clay: #E8987A;
+  --destructive: #F08A78;
+
+  --border: #29303C;
+  --border-strong: #38404E;
+  --input: #6A7283;
+  --ring: #8FB3F0;
+  --overlay: rgb(5 7 11 / 0.6);
+
+  --tint: #232A36;
+  --art-blue: #2C3E60;
+  --art-amber: #4A3A1C;
+  --art-sage: #26382B;
+  --art-line: #D9D4CB;
+
+  --shadow-xs: 0 0 0 transparent;
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-raised: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 16px 40px -12px rgb(0 0 0 / 0.6);
+  --shadow-button: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 1px 2px rgb(0 0 0 / 0.4);
+
+  --chart-1: #8FB3F0;
+  --chart-2: #E8987A;
+  --chart-3: #7CC48E;
+  --chart-4: #F2B65A;
+  --chart-5: #A8ADB8;
+  --sidebar: #151A22;
+  --sidebar-foreground: #ECE8E1;
+  --sidebar-primary: #8FB3F0;
+  --sidebar-primary-foreground: #0F1420;
+  --sidebar-accent: #232935;
+  --sidebar-accent-foreground: #ECE8E1;
+  --sidebar-border: #29303C;
+  --sidebar-ring: #8FB3F0;
+  color-scheme: dark;
+}
+
+@theme inline {
+  /* Type: Instrument Sans for UI and body, Newsreader for headings (D18). */
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-serif: var(--font-newsreader), Georgia, serif;
+
+  /* Type scale (rem at 16px): 12 / 13 / 14 / 15 / 16 / 18 / 22 / 28 / 36 / 44 */
+  --text-2xs: 0.75rem;
+  --text-2xs--line-height: 1.35;
+  --text-label: 0.8125rem;
+  --text-label--line-height: 1.35;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.6;
+  --text-lede: 1.125rem;
+  --text-lede--line-height: 1.55;
+  --text-title: 1.375rem;
+  --text-title--line-height: 1.2;
+  --text-display-sm: 1.75rem;
+  --text-display-sm--line-height: 1.15;
+  --text-display: 2.25rem;
+  --text-display--line-height: 1.08;
+  --text-display-lg: 2.75rem;
+  --text-display-lg--line-height: 1.04;
+
+  --color-sunken: var(--sunken);
+  --color-clay: var(--clay);
+  --color-primary-hover: var(--primary-hover);
+  --color-attention: var(--attention);
+  --color-attention-foreground: var(--attention-foreground);
+  --color-attention-line: var(--attention-line);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-line: var(--success-line);
+  --color-border-strong: var(--border-strong);
+  --color-overlay: var(--overlay);
+  --color-tint: var(--tint);
+  --color-art-blue: var(--art-blue);
+  --color-art-amber: var(--art-amber);
+  --color-art-sage: var(--art-sage);
+  --color-art-line: var(--art-line);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
+  --shadow-button: var(--shadow-button);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+
+  /* Radius by role: 4 tags, 6 inputs/buttons(sm), 8 buttons, 12 cards, 16 dialogs. */
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-4xl: 24px;
+
+  --ease-out-soft: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+    font-optical-sizing: auto;
+  }
+  body {
+    @apply bg-background text-body text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1, h2, h3 { text-wrap: balance; }
+  p, li, dd { text-wrap: pretty; }
+  ::selection { background: color-mix(in srgb, var(--primary) 22%, transparent); }
+
+  /* Scrollbars: thin and warm on desktop. */
+  * { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+}
+
+@layer utilities {
+  .tabular { font-variant-numeric: tabular-nums; }
+  /* Translucent paper for the sticky bars; solid when the user reduces transparency. */
+  .material {
+    background: color-mix(in srgb, var(--background) 82%, transparent);
+    -webkit-backdrop-filter: saturate(160%) blur(16px);
+    backdrop-filter: saturate(160%) blur(16px);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .material { background: var(--background); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
