@@ -148,7 +148,7 @@ The full rules, threat table and checklist are in [SECURITY.md](SECURITY.md). Th
 - **Access is decided on the server.** Every Convex function starts with an access check (`requireUser`, `requireAdmin`, `requireToolOwner`, `requireLoanParty`) and denies by default. The one exception is the public board, which returns three fields. Hiding buttons in the UI is cosmetic.
 - **Admin comes only from the signed Clerk token**, compared exactly with `"admin"`. Tokens last 5 minutes, so a removed admin loses access quickly.
 - **Signed webhooks both ways.** HMAC-SHA256 over `timestamp.body`, 5-minute window, constant-time comparison. Missing secret → requests are refused, never accepted.
-- **Nothing is lost or sent twice.** Notifications are written in the same transaction as the change, retried with backoff, and deduplicated by event id. Reminders use one key per loan per day.
+- **Events already recorded as sent aren't emailed again.** Notifications are written in the same transaction as the change, retried with backoff, and deduplicated by event id. Reminders use one key per loan per day.
 - **Failures are visible.** After 5 tries a notification is marked `failed`; broken n8n runs report back; admins see both.
 - **Every argument is validated on the server:** lengths, enums, dates, and control or direction-override characters are stripped.
 - **Abuse caps:** 20 listings, 10 pending requests and 30 requests per day per person; pages of at most 50.
@@ -181,6 +181,7 @@ There are no profile pages, no last names, no addresses and no phone numbers.
 ## Honest limits
 
 - One HMAC secret is shared by both directions; production would use one per direction and rotate them.
+- An email is recorded as sent just after Gmail accepts it (event id for notifications, status write-back for reminders). A crash between those two steps could still send a second copy.
 - Emails go out through one Gmail account (fine for a demo; production needs a sending service with a verified domain).
 - The CSP allows inline scripts, because Partial Prerendering can't use per-request nonces (see DOCUMENTATION.md D22).
 - "Overdue" uses UTC days, so it can flip a few hours early or late for UK users in summer.
