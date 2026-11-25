@@ -86,6 +86,8 @@ function RequestForm({ tool, onDone }: { tool: Tool; onDone: () => void }) {
           }}
           defaultMonth={isoToLocalDate(today)}
           disabled={{ before: isoToLocalDate(today) }}
+          // Loans are at least 1 day: without this the first click sets both ends to the same day.
+          min={1}
           weekStartsOn={1}
           className="rounded-lg bg-card shadow-xs [--cell-size:--spacing(10)]"
         />
